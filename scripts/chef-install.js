@@ -6,11 +6,11 @@ function installChefClient(shell, installer){
 }
 
 function getFileObject(fso, filePath){
-    var file = fso.GetFile(filePath);
-
-    if (file.FileExists == false){
+    if (fso.FileExists(filePath) == false){
         return null;
     }
+
+    var file = fso.GetFile(filePath);
 
     return file;
 }
@@ -38,6 +38,7 @@ function main(){
     var shell = WScript.CreateObject("WScript.Shell");
 
     if (checkChefInstalled(fso, shell) == true){
+        WScript.Echo("chef-client already installed.");
         WScript.Quit(1);
     }
 
@@ -45,17 +46,21 @@ function main(){
 
     var installer = getFileObject(fso, installerPath);
     if (installer == null){
+        WScript.Echo(installer.Path + " not found.");
         WScript.Quit(1);
     }
 
+    WScript.Echo("Install chef-client start.");
     var result = installChefClient(shell, installer);
     if (result != 0){
+        WScript.Echo("Install chef-client failed.");
         WScript.Quit(1);
     }
 
     if (checkChefInstalled(fso, shell) == true){
-        return
+        WScript.Echo("Install chef-client finished.");
     } else {
+        WScript.Echo("Checking chef-client failed.");
         WScript.Quit(1);
     }
 }
